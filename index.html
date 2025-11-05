@@ -1,137 +1,112 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Banner Prudential App</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #f9f9f9;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      margin: 0;
+      padding: 0;
     }
-    .banner {
+
+    .app-banner {
       position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #004b8d;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
       z-index: 1000;
-      animation: slideUp 0.4s ease-out;
     }
-    @keyframes slideUp {
-      from { transform: translate(-50%, 100%); opacity: 0; }
-      to { transform: translate(-50%, 0); opacity: 1; }
+
+    .app-banner h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      text-align: center;
     }
-    h3 {
-      margin-top: 0;
-      color: #333;
+
+    .buttons {
+      display: flex;
+      gap: 10px;
     }
-    p {
-      color: #555;
-      font-size: 15px;
-      margin-bottom: 16px;
-    }
-    a, button {
-      display: inline-block;
+
+    .app-button {
+      background-color: white;
+      color: #004b8d;
       border: none;
       border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 15px;
-      margin: 6px;
-      text-decoration: none;
+      padding: 10px 16px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
     }
-    .open-download {
-      background-color: #007bff;
-      color: white;
-    }
-    .stay {
-      background-color: #e0e0e0;
-      color: #333;
+
+    .app-button:hover {
+      opacity: 0.9;
     }
   </style>
 </head>
+
 <body>
-  <div class="banner" id="appBanner">
-    <h3>App Prudential!!</h3>
-    <p>Abra o aplicativo ou baixe-o na loja.</p>
-    <div>
-      <a href="#" class="open-download" id="openOrDownload">Abrir ou Baixar App</a>
-      <button class="stay" id="stayHere">Permanecer no site</button>
-    </div>
+  <div id="appBanner" class="app-banner" style="display: none;">
+    <h3>Abra ou baixe o app Prudential</h3>
+    <div class="buttons"> <button id="openOrDownloadApp" class="app-button">Abrir ou baixar app</button> <button
+        id="stayOnSite" class="app-button">Permanecer no site</button> </div>
   </div>
 
   <script>
-    const BANNER_KEY = 'prudential_stay_on_site';
-    const DAYS_TO_REMEMBER = 7;
-
+    const APP_SCHEME = "prudentialapp://open";
+    const ANDROID_STORE_URL = "https://play.google.com/store/apps/details?id=com.prudential.clienteprudential&hl=pt_BR";
+    const IOS_STORE_URL = "https://apps.apple.com/br/app/prudential-seguros/id6736710765";
+    const STORAGE_KEY = "prudential_banner_choice";
+    const CHOICE_DURATION_DAYS = 7;
+    function isMobile() { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent); }
+    function isIOS() { return /iPhone|iPad|iPod/i.test(navigator.userAgent); }
+    function showBanner() { document.getElementById("appBanner").style.display = "flex"; }
+    function saveChoice() {
+      const expires = new Date();
+      expires.setDate(expires.getDate() + CHOICE_DURATION_DAYS);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ choice: "stay", expires: expires.getTime() }));
+    }
     function shouldShowBanner() {
-      const saved = localStorage.getItem(BANNER_KEY);
-      if (!saved) return true;
-      const data = JSON.parse(saved);
-      const now = new Date().getTime();
-      return now - data.timestamp > DAYS_TO_REMEMBER * 24 * 60 * 60 * 1000;
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      if (!data.expires) return true; return Date.now() > data.expires;
     }
-
-    if (!shouldShowBanner()) {
-      document.getElementById('appBanner').style.display = 'none';
+    function openOrDownloadApp() {
+      const appLink = APP_SCHEME;
+      const storeLink = isIOS() ? IOS_STORE_URL : ANDROID_STORE_URL;
+      let hidden = false;
+      // detecta se o usuário saiu do navegador (app abriu)
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) hidden = true;
+      });
+      // tenta abrir o app
+      window.location.href = appLink;
+      // se após 1.5s não saiu, abre loja
+      setTimeout(() => {
+        if (!hidden) {
+          window.location.href = storeLink;
+        }
+      }, 1500);
     }
-
-    function getMobileOS() {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      if (/android/i.test(userAgent)) return "android";
-      if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) return "ios";
-      return "other";
+    if (isMobile() && shouldShowBanner()) {
+      showBanner();
     }
-
-    const os = getMobileOS();
-
-    const openBtn = document.getElementById('openOrDownload');
-    openBtn.addEventListener('click', (event) => {
-      event.preventDefault();
-
-      if (os === "android") {
-        // Deep link + fallback automático para Play Store
-        const intentUrl = 'intent://abrir#Intent;scheme=prudentialapp;package=com.prudential.clienteprudential;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.prudential.clienteprudential&hl=pt_BR;end';
-        window.location.href = intentUrl;
-      } else if (os === "ios") {
-        // iOS precisa ser um link real com fallback
-        const schemeUrl = 'prudentialapp://abrir';
-        const appStoreUrl = 'https://apps.apple.com/br/app/prudential-seguros/id6736710765';
-
-        // cria um link real para o esquema
-        const link = document.createElement('a');
-        link.href = schemeUrl;
-        document.body.appendChild(link);
-        link.click();
-
-        // fallback para App Store se o app não abrir
-        const start = Date.now();
-        setTimeout(() => {
-          if (Date.now() - start < 1500) {
-            window.location.href = appStoreUrl;
-          }
-        }, 1000);
-      } else {
-        alert('Este recurso está disponível apenas em dispositivos móveis.');
-      }
-    });
-
-    document.getElementById('stayHere').addEventListener('click', () => {
-      localStorage.setItem(BANNER_KEY, JSON.stringify({ timestamp: new Date().getTime() }));
-      document.getElementById('appBanner').style.display = 'none';
-    });
+    document.getElementById("openOrDownloadApp").addEventListener("click", openOrDownloadApp);
+    document.getElementById("stayOnSite").addEventListener("click", () => {
+      saveChoice();
+      document.getElementById("appBanner").style.display = "none";
+    }); 
   </script>
 </body>
+
 </html>
