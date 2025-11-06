@@ -72,15 +72,16 @@
         button.addEventListener("click", () => {
           let hasOpened = false;
           const visibilityHandler = () => {
-            hasOpened = true;
+            if (document.hidden) {
+              hasOpened = true;
+            }
             document.removeEventListener("visibilitychange", visibilityHandler);
           };
           document.addEventListener("visibilitychange", visibilityHandler);
           const appLink = "prudentialapp://open";
           window.location = appLink;
           const timeoutId = setTimeout(() => {
-            if (!hasOpened || !document.hidden) {
-              alert(!hasOpened);
+            if (!hasOpened) {
               const storeLink = isAndroid ? androidStore : iosStore;
               window.location = storeLink;
             }
