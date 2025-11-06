@@ -69,24 +69,24 @@
         const isAndroid = /Android/i.test(navigator.userAgent);
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
         banner.style.display = "block";
+        let hasOpened = false;
         button.addEventListener("click", () => {
-          let hasOpened = false;
+
           const visibilityHandler = () => {
             hasOpened = true;
-            // alert("mudou a janela!");
-            // document.removeEventListener("visibilitychange", visibilityHandler);
+            document.removeEventListener("visibilitychange", visibilityHandler);
           };
-
           document.addEventListener("visibilitychange", visibilityHandler);
 
           const appLink = "prudentialapp://open";
           window.location = appLink;
+
           setTimeout(() => {
             if (!hasOpened) {
               const storeLink = isAndroid ? androidStore : iosStore;
               window.location = storeLink;
             }
-          }, 2500); // Aumentar o tempo de espera para 2 segundos
+          }, 2000); // Aumentar o tempo de espera para 2 segundos
         });
       })();
     </script>
