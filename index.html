@@ -69,8 +69,8 @@
         const isAndroid = /Android/i.test(navigator.userAgent);
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
         banner.style.display = "block";
-        let hasOpened = false;
         button.addEventListener("click", () => {
+          let hasOpened = false;
 
           const visibilityHandler = () => {
             hasOpened = true;
@@ -86,7 +86,7 @@
               const storeLink = isAndroid ? androidStore : iosStore;
               window.location = storeLink;
             }
-          }, 2000); // Aumentar o tempo de espera para 2 segundos
+          }, 1500); // Aumentar o tempo de espera para 2 segundos
         });
       })();
     </script>
