@@ -53,7 +53,7 @@
   <body>
     <div id="app-banner">
       <h3>Abra o App Prudential</h3>
-      <p>Acesse sua conta de forma rápida e segura.</p>
+      <p id="app-text">Acesse sua conta de forma rápida e segura.</p>
       <button id="openOrDownloadBtn">Abrir ou Baixar App</button>
     </div>
     <script>
@@ -62,6 +62,7 @@
         if (!isMobile) return;
         const banner = document.getElementById("app-banner");
         const button = document.getElementById("openOrDownloadBtn");
+        const text = document.getElementById("app-text");
         banner.style.display = "block";
         const isAndroid = /Android/i.test(navigator.userAgent);
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -71,17 +72,25 @@
         const iosStore =
           "https://apps.apple.com/br/app/prudential-seguros/id6736710765";
         button.addEventListener("click", () => {
-          const start = Date.now();
-          let iframe = document.createElement("iframe");
-          iframe.style.display = "none";
-          iframe.src = appScheme;
-          document.body.appendChild(iframe);
+          const startTime = Date.now();
+          let appOpened = false;
+          try {
+            // Abrir direto o esquema — essencial pro iOS funcionar
+            window.location = appScheme;
+          } catch (e) {
+            console.warn("Erro ao tentar abrir o esquema:", e);
+          }
+          // Fallback — caso o app não abra
           setTimeout(() => {
-            const elapsed = Date.now() - start;
+            const elapsed = Date.now() - startTime;
+            // Se ainda estamos na mesma aba depois de ~1s, significa que o app não abriu
             if (elapsed < 1500) {
+              if (isIOS) {
+                text.textContent =
+                  "Se o app estiver instalado, toque em 'Abrir' na App Store.";
+              }
               window.location.href = isAndroid ? androidStore : iosStore;
             }
-            document.body.removeChild(iframe);
           }, 1200);
         });
       })();
