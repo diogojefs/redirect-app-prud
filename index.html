@@ -75,7 +75,9 @@
             hasOpened = true;
             document.removeEventListener("visibilitychange", visibilityHandler);
           };
-          document.addEventListener("visibilitychange", visibilityHandler);
+          setTimeout(() => {
+            document.addEventListener("visibilitychange", visibilityHandler);
+          }, 1000);
           const appLink = "prudentialapp://open";
           window.location = appLink;
           setTimeout(() => {
