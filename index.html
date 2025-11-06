@@ -73,17 +73,20 @@
           "https://apps.apple.com/br/app/prudential-seguros/id6736710765";
         button.addEventListener("click", () => {
           const startTime = Date.now();
-          let appOpened = false;
-          try {
-            // Abrir direto o esquema — essencial pro iOS funcionar
+          let iframe;
+          if (isAndroid) {
+            // Android: abrir via iframe para evitar abrir site da loja
+            iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            iframe.src = appScheme;
+            document.body.appendChild(iframe);
+          } else if (isIOS) {
+            // iOS: precisa ser direto
             window.location = appScheme;
-          } catch (e) {
-            console.warn("Erro ao tentar abrir o esquema:", e);
           }
-          // Fallback — caso o app não abra
+          // Fallback para loja se o app não abrir
           setTimeout(() => {
             const elapsed = Date.now() - startTime;
-            // Se ainda estamos na mesma aba depois de ~1s, significa que o app não abriu
             if (elapsed < 1500) {
               if (isIOS) {
                 text.textContent =
@@ -91,6 +94,7 @@
               }
               window.location.href = isAndroid ? androidStore : iosStore;
             }
+            if (iframe) document.body.removeChild(iframe);
           }, 1200);
         });
       })();
