@@ -71,7 +71,12 @@
         banner.style.display = "block";
         button.addEventListener("click", () => {
           let hasOpened = false;
-          // Detecta quando o navegador perde o foco (app abriu)    const visibilityHandler = () => {     hasOpened = true;     document.removeEventListener('visibilitychange', visibilityHandler);    };    document.addEventListener('visibilitychange', visibilityHandler);
+          // Detecta quando o navegador perde o foco (app abriu)    
+          const visibilityHandler = () => {     
+            hasOpened = true;     
+            document.removeEventListener('visibilitychange', visibilityHandler);    
+          };    
+          document.addEventListener('visibilitychange', visibilityHandler);
           if (isAndroid) {
             window.location = "prudentialapp://open";
             setTimeout(() => {
