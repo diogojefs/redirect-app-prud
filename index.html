@@ -11,7 +11,6 @@
         margin: 0;
         padding: 0;
       }
-
       #app-banner {
         display: none;
         position: fixed;
@@ -27,18 +26,15 @@
         width: 90%;
         z-index: 9999;
       }
-
       #app-banner h3 {
         margin: 0 0 10px;
         font-size: 18px;
       }
-
       #app-banner p {
         font-size: 14px;
         color: #555;
         margin-bottom: 16px;
       }
-
       #app-banner button {
         background-color: #007bff;
         color: white;
@@ -49,13 +45,11 @@
         cursor: pointer;
         width: 100%;
       }
-
       #app-banner button:hover {
         background-color: #0056b3;
       }
     </style>
   </head>
-
   <body>
     <div id="app-banner">
       <h3>Abra o App Prudential</h3>
@@ -65,37 +59,33 @@
     <script>
       (function () {
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        if (!isMobile) return; // só exibe em dispositivos móveis
+        if (!isMobile) return;
         const banner = document.getElementById("app-banner");
         const button = document.getElementById("openOrDownloadBtn");
-        const androidIntent =
-          "intent://abrir#Intent;scheme=prudentialapp;package=com.prudential.clienteprudential;end";
         const androidStore =
           "https://play.google.com/store/apps/details?id=com.prudential.clienteprudential&hl=pt_BR";
-        const iosScheme = "prudentialapp://open";
         const iosStore =
           "https://apps.apple.com/br/app/prudential-seguros/id6736710765";
         const isAndroid = /Android/i.test(navigator.userAgent);
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
         banner.style.display = "block";
         button.addEventListener("click", () => {
+          let hasOpened = false;
+          // Detecta quando o navegador perde o foco (app abriu)    const visibilityHandler = () => {     hasOpened = true;     document.removeEventListener('visibilitychange', visibilityHandler);    };    document.addEventListener('visibilitychange', visibilityHandler);
           if (isAndroid) {
-            // tenta abrir o app, senão vai pra loja
-            const now = Date.now();
             window.location = "prudentialapp://open";
             setTimeout(() => {
-              if (Date.now() - now < 1500) {
+              if (!hasOpened) {
                 window.location = androidStore;
               }
-            }, 1200);
+            }, 1500);
           } else if (isIOS) {
-            const now = Date.now();
-            window.location = iosScheme;
+            window.location = "prudentialapp://open";
             setTimeout(() => {
-              if (Date.now() - now < 1500) {
+              if (!hasOpened) {
                 window.location = iosStore;
               }
-            }, 1200);
+            }, 1500);
           }
         });
       })();
