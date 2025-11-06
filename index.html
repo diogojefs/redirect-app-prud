@@ -35,19 +35,17 @@
         color: #555;
         margin-bottom: 16px;
       }
-      #app-banner a {
-        display: inline-block;
+      #app-banner button {
         background-color: #007bff;
         color: white;
-        text-decoration: none;
+        border: none;
         padding: 12px 16px;
         border-radius: 8px;
         font-size: 16px;
         cursor: pointer;
         width: 100%;
-        text-align: center;
       }
-      #app-banner a:hover {
+      #app-banner button:hover {
         background-color: #0056b3;
       }
     </style>
@@ -56,23 +54,21 @@
     <div id="app-banner">
       <h3>Abra o App Prudential</h3>
       <p>Acesse sua conta de forma rápida e segura.</p>
-      <a id="openOrDownloadLink" href="#">Abrir ou Baixar App</a>
+      <button id="openOrDownloadBtn">Abrir ou Baixar App</button>
     </div>
     <script>
       (function () {
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         if (!isMobile) return;
         const banner = document.getElementById("app-banner");
-        const link = document.getElementById("openOrDownloadLink");
-        const androidStore =
-          "https://play.google.com/store/apps/details?id=com.prudential.clienteprudential";
+        const button = document.getElementById("openOrDownloadBtn");
+        const androidStore = "intent://open#Intent;scheme=prudentialapp;package=com.prudential.clienteprudential;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.prudential.clienteprudential;end";
         const iosStore =
           "https://apps.apple.com/br/app/prudential-seguros/id6736710765";
         const isAndroid = /Android/i.test(navigator.userAgent);
         const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
         banner.style.display = "block";
-        link.addEventListener("click", (event) => {
-          event.preventDefault(); // Previne o comportamento padrão do link
+        button.addEventListener("click", () => {
           let hasOpened = false;
           const visibilityHandler = () => {
             if (document.hidden) {
@@ -83,12 +79,12 @@
           document.addEventListener("visibilitychange", visibilityHandler);
           const appLink = "prudentialapp://open";
           window.location = appLink;
-          setTimeout(() => {
+          const timeoutId = setTimeout(() => {
             if (!hasOpened) {
               const storeLink = isAndroid ? androidStore : iosStore;
-              window.open(storeLink, '_blank');
+              window.location = storeLink;
             }
-          }, 2200); // Tempo de espera ajustado
+          }, 2200); // Aumentar o tempo de espera para 3 segundos
         });
       })();
     </script>
