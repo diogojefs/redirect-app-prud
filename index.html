@@ -79,7 +79,7 @@
           const appLink = "prudentialapp://open";
           window.location = appLink;
           const timeoutId = setTimeout(() => {
-            if (!hasOpened && document.hidden) {
+            if (!hasOpened && !document.hidden) {
               const storeLink = isAndroid ? androidStore : iosStore;
               window.location = storeLink;
             }
