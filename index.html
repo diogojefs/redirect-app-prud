@@ -73,11 +73,12 @@
           let hasOpened = false;
           const visibilityHandler = () => {
             hasOpened = true;
+            alert("mudou a janela!");
             document.removeEventListener("visibilitychange", visibilityHandler);
           };
-          setTimeout(() => {
-            document.addEventListener("visibilitychange", visibilityHandler);
-          }, 1000);
+
+          document.addEventListener("visibilitychange", visibilityHandler);
+
           const appLink = "prudentialapp://open";
           window.location = appLink;
           setTimeout(() => {
