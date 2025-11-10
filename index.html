@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,151 +11,168 @@
         margin: 0;
         padding: 0;
       }
-      #app-banner {
-        display: none;
+
+      #overlay-teste {
         position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: white;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        border-radius: 12px;
-        text-align: center;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: flex-end;
+        z-index: 999;
+        display: none;
+      }
+
+      .fixed-box {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: 300px;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+        background-color: #fff;
         padding: 20px;
-        max-width: 340px;
-        width: 90%;
-        z-index: 9999;
+        text-align: center;
       }
-      #app-banner h3 {
-        margin: 0 0 10px;
+
+      .fixed-box img {
+        height: 64px;
+        width: 64px;
+        margin-bottom: 15px;
+      }
+
+      .fixed-box p {
         font-size: 18px;
-      }
-      #app-banner p {
-        font-size: 14px;
-        color: #555;
+        color: #111111;
         margin-bottom: 16px;
       }
-      #app-banner button {
+
+      .fixed-box button {
+        font-size: 16px;
+        padding: 11px 24px;
+        border: none;
+        border-radius: 20px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        margin-bottom: 10px;
+        width: 100%;
+      }
+
+      .fixed-box button:hover {
+        background-color: #0056b3;
+      }
+
+      .fixed-box .btn-link {
+        background: none;
+        border: none;
+        color: #007bff;
+        cursor: pointer;
+        text-decoration: underline;
+        font-weight: 600;
+      }
+
+      .top-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 18px 12px 6px;
+        z-index: 1000;
+        box-sizing: border-box;
+        display: flex;
+      }
+
+      .content-group {
+        display: flex;
+        align-items: center;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        line-height: 0.6;
+        margin-right: 8px;
+        cursor: pointer;
+        color: #8d8d8d;
+      }
+
+      .logo {
+        margin-right: 8.95px;
+        width: 38px;
+        height: 38px;
+      }
+
+      .text-box {
+        color: #111111;
+        font-size: 12px;
+      }
+
+      .text-box p {
+        margin: 0;
+      }
+
+      .top-modal .btn {
+        white-space: nowrap;
+        padding: 5px 16px;
+        font-size: 13px;
         background-color: #007bff;
         color: white;
         border: none;
-        padding: 12px 16px;
-        border-radius: 8px;
-        font-size: 16px;
+        border-radius: 20px;
         cursor: pointer;
-        width: 100%;
       }
-      #app-banner button:hover {
+
+      .top-modal .btn:hover {
         background-color: #0056b3;
       }
     </style>
   </head>
   <body>
-    <div id="app-banner">
-      <h3>Abra o App Prudential</h3>
-      <p id="app-text">Acesse sua conta de forma rápida e segura.</p>
-      <button id="openOrDownloadBtn">Abrir ou Baixar App</button>
+    <div class="top-modal">
+      <div class="content-group">
+        <button class="close-btn" aria-label="Fechar">&times;</button>
+        <img src="./imagens/logo-prudential.svg" alt="Logo" class="logo" />
+        <div class="text-box">
+          <p>
+            <b>Abra o aplicativo!</b><br />Toda sua proteção em um só lugar!
+          </p>
+        </div>
+      </div>
+      <button
+        id="openOrDownloadBtn"
+        class="btn"
+      >
+        Abrir
+      </button>
     </div>
-    <script>
-      (function () {
-        const ua = navigator.userAgent || "";
-        const isAndroid = /Android/i.test(ua);
-        const isIOS = /iPhone|iPad|iPod/i.test(ua);
-        const isMobile = isAndroid || isIOS;
-        if (!isMobile) return;
-        const banner = document.getElementById("app-banner");
-        const button = document.getElementById("openOrDownloadBtn");
-        const text = document.getElementById("app-text");
-        banner.style.display = "block";
-        const appScheme = "prudentialapp://open";
-        const androidStore =
-          "market://details?id=com.prudential.clienteprudential";
-        const iosStore =
-          "https://apps.apple.com/br/app/prudential-seguros/id6736710765";
-        // delays por plataforma (ms)
-        const ANDROID_DELAY = 1200;
-        const IOS_DELAY = 2500;
-        // margem para garantir fallback se página não perdeu foco
-        const GRACE_MS = 500;
-        button.addEventListener("click", () => {
-          const start = Date.now();
-          let iframe = null;
-          let fallbackTimer = null;
-          let opened = false;
-          function cleanupListeners() {
-            document.removeEventListener("visibilitychange", onVisibility);
-            window.removeEventListener("pagehide", onPageHide);
-            if (fallbackTimer) {
-              clearTimeout(fallbackTimer);
-              fallbackTimer = null;
-            }
-          }
-          function onVisibility() {
-            if (document.hidden) {
-              opened = true;
-              cleanupListeners();
-            }
-          }
-          function onPageHide() {
-            opened = true;
-            cleanupListeners();
-          }
-          // registra listeners *antes* de tentar abrir
-          document.addEventListener("visibilitychange", onVisibility);
-          window.addEventListener("pagehide", onPageHide);
-          if (isAndroid) {
-            // Android: usar iframe (funcionava 100% pra você)
-            iframe = document.createElement("iframe");
-            iframe.style.display = "none";
-            iframe.src = appScheme;
-            document.body.appendChild(iframe);
-          } else if (isIOS) {
-            // iOS: abrir direto via location
-            // usar assign ao invés de location.href pode ser equivalente
-            window.location.assign(appScheme);
-          }
-          // escolhe delay adequado
-          const delay = isIOS ? IOS_DELAY : ANDROID_DELAY;
-          // fallback (executa após 'delay', mas só redireciona se não houve abertura)
-          fallbackTimer = setTimeout(() => {
-            const elapsed = Date.now() - start;
-            // se não houve perda de foco (opened=false) e ainda dentro da janela (elapsed < delay + GRACE_MS), faz fallback
-            if (!opened && elapsed < delay + GRACE_MS) {
-              // mensagem extra para iOS (opcional)
-              if (isIOS) {
-                text.textContent =
-                  "Se o app estiver instalado, toque em 'Abrir' na App Store.";
-              }
-              // abrir app da loja (market:// no Android, App Store link no iOS)
-              try {
-                if (isAndroid) {
-                  // via location (navegação na mesma aba) para manter comportamento consistente
-                  window.location.href = androidStore;
-                } else {
-                  window.location.href = iosStore;
-                }
-              } catch (e) {
-                // fallback adicional
-                if (isAndroid) {
-                  window.open(
-                    "https://play.google.com/store/apps/details?id=com.prudential.clienteprudential",
-                    "_blank"
-                  );
-                } else {
-                  window.open(iosStore, "_blank");
-                }
-              }
-            }
-            cleanupListeners();
-            // remove iframe se foi criado
-            if (iframe && iframe.parentNode) {
-              try {
-                iframe.parentNode.removeChild(iframe);
-              } catch (e) {}
-            }
-          }, delay);
-        });
-      })();
-    </script>
+    <div id="overlay-teste">
+      <div class="fixed-box">
+        <img
+          src="./imagens/logo-prudential.svg"
+          alt="Imagem de exemplo"
+        />
+        <p>
+          <b>Baixe o aplicativo!</b><br />Toda sua proteção em um só lugar!
+        </p>
+        <button
+          id="openOrDownloadBtn"
+        >
+          Baixar App Prudential
+        </button>
+        <button class="btn-link">Agora não</button>
+      </div>
+    </div>
+    <script src="./js/modal-download-app.js"></script>
   </body>
 </html>
